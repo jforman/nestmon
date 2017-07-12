@@ -70,6 +70,7 @@ func parseConfig(configPath string, c *NestmonConfig) {
 func main() {
 	var (
 		flagConfigPath = flag.String("config", "", "JSON config containing Nest API access parameters.")
+		queryInterval = flag.Duration("query_interval",3*time.Minute,"Interval between Nest API queries." )
 		config         NestmonConfig
 	)
 	flag.Parse()
@@ -81,7 +82,7 @@ func main() {
 		t := time.Now()
 		fmt.Printf("Requesting data at %v.\n", t.Format(time.RFC3339))
 		getNestData(&config)
-		time.Sleep(1 * time.Minute)
+		time.Sleep(*queryInterval)
 	}
 
 }
