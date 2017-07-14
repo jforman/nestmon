@@ -2,6 +2,7 @@ package main
 
 // https://developers.nest.com/documentation/cloud/how-to-read-data
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -50,8 +51,10 @@ func getNestData(c *NestmonConfig) {
 	resp, _ := customClient.Do(r)
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	var prettyJson bytes.Buffer
+	json.Indent(&prettyJson, bodyBytes, "=", "\t")
 	fmt.Printf("Response: %v.\n", resp)
-	fmt.Printf("Response Body: %v.\n", string(bodyBytes))
+	fmt.Printf("Pretty JSON: %v.\n", prettyJson.String())
 }
 
 func parseConfig(configPath string, c *NestmonConfig) {
