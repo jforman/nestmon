@@ -67,10 +67,10 @@ func ParseNestData(b []byte) {
 	}
 	fmt.Printf("NestJson.Devices: %v.\n", nestJson.Devices.Thermostats)
 	for key, value := range nestJson.Devices.Thermostats {
-		fmt.Printf("Thermostats key: %v, value: %v.\n", key, value)
+		fmt.Printf("Thermostats key: %+v, value: %+v.\n", key, value)
 	}
 	for key, value := range nestJson.Structures {
-		fmt.Printf("Structures, key: %v, value: %v.\n", key, value)
+		fmt.Printf("Structures, key: %+v, value: %+v.\n", key, value)
 	}
 
 }
