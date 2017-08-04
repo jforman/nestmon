@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 )
 
 const (
@@ -16,7 +17,18 @@ const (
 	NestAPIURL = "https://developer-api.nest.com"
 )
 
-func GetNestData(c *NestmonConfig) []byte {
+func StartNestmonLoop(queryInterval *time.Duration, nc *NestmonConfig) {
+	for {
+		t := time.Now()
+		fmt.Printf("Requesting data at %v.\n", t.Format(time.RFC3339))
+		nestData := getNestData(nc)
+		parseNestData(nestData)
+		fmt.Printf("Sleeping for %v.\n", time.Duration(*queryInterval))
+		time.Sleep(*queryInterval)
+	}
+}
+
+func getNestData(c *NestmonConfig) []byte {
 	fmt.Println("Getting Nest Data.")
 	u, _ := url.ParseRequestURI(NestAPIURL)
 	urlStr := u.String()
@@ -59,7 +71,7 @@ func ParseConfig(configPath string, c *NestmonConfig) {
 	}
 }
 
-func ParseNestData(b []byte) {
+func parseNestData(b []byte) {
 	var nestJson NestAPIResponse
 	err := json.Unmarshal(b, &nestJson)
 	if err != nil {
