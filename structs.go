@@ -6,6 +6,16 @@ type NestAPIResponse struct {
 	Structures map[string]*Structure `json:"structures,omitempty`
 }
 
+// Root of NestAPI Streaming JSON Response
+type NestAPIStreamingResponse struct {
+	Data *NestAPIStreamingData `json:"data"`
+}
+
+type NestAPIStreamingData struct {
+	Devices    *Devices              `json:"devices",omitempty`
+	Structures map[string]*Structure `json:"structures",omitempty`
+}
+
 type Devices struct {
 	Thermostats map[string]*Thermostat `json:"thermostats",omitempty`
 }
