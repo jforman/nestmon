@@ -20,12 +20,14 @@ func StreamingStatusLoop(c chan NestAPIStreamingResponse, accessToken string) {
 	customClient := http.Client{
 		CheckRedirect: func(redirRequest *http.Request, via []*http.Request) error {
 			redirRequest.Header = req.Header
-
 			if len(via) >= 10 {
 				return errors.New("Stopped after 10 redirects")
 			}
 			return nil
 		},
+		// TODO: Make actual timeouts work where if the stream dies
+		// the connection is dropped and retried.
+		// Timeout: 300 * time.Second,
 	}
 
 	resp, _ := customClient.Do(req)
