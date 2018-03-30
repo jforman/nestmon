@@ -36,8 +36,3 @@ type Thermostat struct {
 type NestmonConfig struct {
 	AccessToken string `json:"accessToken"`
 }
-
-type NestResponse struct {
-	Error            string `json:"error"`
-	ErrorDescription string `json:"error_description"`
-}

@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+var (
+	NestResponse NestAPIResponse
+)
+
 const (
 	TokenURL   = "https://api.home.nest.com/oauth2/access_token"
 	NestAPIURL = "https://developer-api.nest.com"
@@ -72,16 +76,15 @@ func ParseConfig(configPath string, c *NestmonConfig) {
 }
 
 func parseNestData(b []byte) {
-	var nestJson NestAPIResponse
-	err := json.Unmarshal(b, &nestJson)
+	err := json.Unmarshal(b, &NestResponse)
 	if err != nil {
 		fmt.Printf("Error in unmarshalling NestAPIResponse JSON: %v.\n", err)
 	}
-	fmt.Printf("NestJson.Devices: %v.\n", nestJson.Devices.Thermostats)
-	for key, value := range nestJson.Devices.Thermostats {
+	fmt.Printf("NestJson.Devices: %v.\n", NestResponse.Devices.Thermostats)
+	for key, value := range NestResponse.Devices.Thermostats {
 		fmt.Printf("Thermostats key: %+v, value: %+v.\n", key, value)
 	}
-	for key, value := range nestJson.Structures {
+	for key, value := range NestResponse.Structures {
 		fmt.Printf("Structures, key: %+v, value: %+v.\n", key, value)
 	}
 

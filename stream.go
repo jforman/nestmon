@@ -10,6 +10,11 @@ import (
 	"strings"
 )
 
+var (
+	flagConfigPath    string
+	StreamingResponse NestAPIStreamingResponse
+)
+
 func StreamingStatusLoop(c chan NestAPIStreamingResponse, accessToken string) {
 	u, _ := url.ParseRequestURI(NestAPIURL)
 	urlStr := u.String()
@@ -52,21 +57,20 @@ func StreamingStatusLoop(c chan NestAPIStreamingResponse, accessToken string) {
 
 func GetNestStructData(d string) NestAPIStreamingResponse {
 	// Given string JSON of Nest API response, return NestAPIStreamingResponse object
-	var response NestAPIStreamingResponse
-	err := json.Unmarshal([]byte(d), &response)
+	err := json.Unmarshal([]byte(d), &StreamingResponse)
 	if err != nil {
 		fmt.Printf("Error in unmarshalling NestAPIResponse JSON: %v.\n", err)
 	}
-	return response
+	return StreamingResponse
 }
 
 func getNestAPIResponse(b string) (NestAPIStreamingResponse, error) {
 	// Given a string of bytes, return either nil or an NestAPIResponse struct
-	var response NestAPIStreamingResponse
+	var emptyResponse NestAPIStreamingResponse
 	httpData := strings.SplitN(b, ":", 2)
 	if len(httpData) == 1 {
 		// Empty line
-		return response, nil
+		return emptyResponse, nil
 	}
 	value := strings.TrimSpace(httpData[1])
 	switch prefix := strings.TrimSpace(httpData[0]); prefix {
@@ -74,11 +78,11 @@ func getNestAPIResponse(b string) (NestAPIStreamingResponse, error) {
 		if value == "keep-alive" {
 			// TODO: Handle lack of keep-alives.
 		}
-		return response, nil
+		return emptyResponse, nil
 	case "data":
 		if value != "null" {
-			response = GetNestStructData(strings.TrimSpace(httpData[1]))
+			StreamingResponse = GetNestStructData(strings.TrimSpace(httpData[1]))
 		}
 	}
-	return response, nil
+	return StreamingResponse, nil
 }
