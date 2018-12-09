@@ -25,14 +25,14 @@ func StartNestmonLoop(queryInterval *time.Duration, nc *NestmonConfig) {
 	for {
 		t := time.Now()
 		fmt.Printf("Requesting data at %v.\n", t.Format(time.RFC3339))
-		nestData := getNestData(nc)
-		parseNestData(nestData)
+		nestResponseData := getNestResponse(nc)
+		processNestResponse(nestResponseData, nc)
 		fmt.Printf("Sleeping for %v.\n", time.Duration(*queryInterval))
 		time.Sleep(*queryInterval)
 	}
 }
 
-func getNestData(c *NestmonConfig) []byte {
+func getNestResponse(c *NestmonConfig) NestAPIResponse {
 	fmt.Println("Getting Nest Data.")
 	u, _ := url.ParseRequestURI(NestAPIURL)
 	urlStr := u.String()
@@ -59,7 +59,13 @@ func getNestData(c *NestmonConfig) []byte {
 	json.Indent(&prettyJson, bodyBytes, "=", "\t")
 	fmt.Printf("Response: %v.\n", resp)
 	fmt.Printf("Pretty JSON: %v.\n", prettyJson.String())
-	return bodyBytes
+
+	err := json.Unmarshal(bodyBytes, &NestResponse)
+	if err != nil {
+		fmt.Printf("Error in unmarshalling NestAPIResponse JSON: %v.\n", err)
+	}
+
+	return NestResponse
 }
 
 func ParseConfig(configPath string, c *NestmonConfig) {
@@ -70,22 +76,19 @@ func ParseConfig(configPath string, c *NestmonConfig) {
 	}
 	err = json.Unmarshal(raw, &c)
 	if err != nil {
-		fmt.Printf("Error in unmarshalling the JSON:: %v.\n", err)
+		fmt.Printf("In PraseConfig, Error in unmarshalling the JSON: %v.\n", err)
 		os.Exit(1)
 	}
 }
 
-func parseNestData(b []byte) {
-	err := json.Unmarshal(b, &NestResponse)
-	if err != nil {
-		fmt.Printf("Error in unmarshalling NestAPIResponse JSON: %v.\n", err)
-	}
-	fmt.Printf("NestJson.Devices: %v.\n", NestResponse.Devices.Thermostats)
-	for key, value := range NestResponse.Devices.Thermostats {
+func processNestResponse(nr NestAPIResponse, c *NestmonConfig) {
+	// Given NestResponse, act on it.
+	fmt.Println("in processNestRespose")
+	fmt.Printf("NestJson.Devices: %v.\n", nr.Devices.Thermostats)
+	for key, value := range nr.Devices.Thermostats {
 		fmt.Printf("Thermostats key: %+v, value: %+v.\n", key, value)
 	}
-	for key, value := range NestResponse.Structures {
+	for key, value := range nr.Structures {
 		fmt.Printf("Structures, key: %+v, value: %+v.\n", key, value)
 	}
-
 }
