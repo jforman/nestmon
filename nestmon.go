@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 )
 
@@ -24,16 +23,16 @@ const (
 func StartNestmonLoop(queryInterval *time.Duration, nc *NestmonConfig) {
 	for {
 		t := time.Now()
-		fmt.Printf("Requesting data at %v.\n", t.Format(time.RFC3339))
+		log.Printf("Requesting data at %v.\n", t.Format(time.RFC3339))
 		nestResponseData := getNestResponse(nc)
 		processNestResponse(nestResponseData, nc)
-		fmt.Printf("Sleeping for %v.\n", time.Duration(*queryInterval))
+		log.Printf("Sleeping for %v.\n", time.Duration(*queryInterval))
 		time.Sleep(*queryInterval)
 	}
 }
 
 func getNestResponse(c *NestmonConfig) NestAPIResponse {
-	fmt.Println("Getting Nest Data.")
+	log.Println("Getting Nest Data.")
 	u, _ := url.ParseRequestURI(NestAPIURL)
 	urlStr := u.String()
 	r, _ := http.NewRequest("GET", urlStr, nil)
@@ -51,18 +50,18 @@ func getNestResponse(c *NestmonConfig) NestAPIResponse {
 		},
 	}
 
-	fmt.Printf("Request: %+v.\n", r)
+	log.Printf("Request: %+v.\n", r)
 	resp, _ := customClient.Do(r)
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	var prettyJson bytes.Buffer
 	json.Indent(&prettyJson, bodyBytes, "=", "\t")
-	fmt.Printf("Response: %v.\n", resp)
-	fmt.Printf("Pretty JSON: %v.\n", prettyJson.String())
+	log.Printf("Response: %v.\n", resp)
+	log.Printf("Pretty JSON: %v.\n", prettyJson.String())
 
 	err := json.Unmarshal(bodyBytes, &NestResponse)
 	if err != nil {
-		fmt.Printf("Error in unmarshalling NestAPIResponse JSON: %v.\n", err)
+		log.Printf("Error in unmarshalling NestAPIResponse JSON: %v.\n", err)
 	}
 
 	return NestResponse
@@ -71,24 +70,21 @@ func getNestResponse(c *NestmonConfig) NestAPIResponse {
 func ParseConfig(configPath string, c *NestmonConfig) {
 	raw, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		fmt.Printf("Error reading config: %v.\n", err.Error())
-		os.Exit(1)
+		log.Fatalf("Error reading config: %v.\n", err.Error())
 	}
 	err = json.Unmarshal(raw, &c)
 	if err != nil {
-		fmt.Printf("In PraseConfig, Error in unmarshalling the JSON: %v.\n", err)
-		os.Exit(1)
+		log.Fatalf("In PraseConfig, Error in unmarshalling the JSON: %v.\n", err)
 	}
 }
 
 func processNestResponse(nr NestAPIResponse, c *NestmonConfig) {
 	// Given NestResponse, act on it.
-	fmt.Println("in processNestRespose")
-	fmt.Printf("NestJson.Devices: %v.\n", nr.Devices.Thermostats)
+	log.Printf("NestJson.Devices: %v.\n", nr.Devices.Thermostats)
 	for key, value := range nr.Devices.Thermostats {
-		fmt.Printf("Thermostats key: %+v, value: %+v.\n", key, value)
+		log.Printf("Thermostats key: %+v, value: %+v.\n", key, value)
 	}
 	for key, value := range nr.Structures {
-		fmt.Printf("Structures, key: %+v, value: %+v.\n", key, value)
+		log.Printf("Structures, key: %+v, value: %+v.\n", key, value)
 	}
 }

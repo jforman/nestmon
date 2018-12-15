@@ -3,8 +3,8 @@ package main
 // https://developers.nest.com/documentation/cloud/how-to-read-data
 import (
 	"flag"
-	"fmt"
 	"github.com/jforman/nestmon"
+	"log"
 	"time"
 )
 
@@ -16,8 +16,8 @@ func main() {
 	)
 	flag.Parse()
 	nestmon.ParseConfig(*flagConfigPath, &config)
-	fmt.Println("Starting thermostat status nestmon. Type: Polling.")
-	fmt.Printf("In main, after parse, config: %+v.\n", config)
+	log.Println("Starting thermostat status nestmon. Type: Polling.")
+	log.Printf("In main, after parse, config: %+v.\n", config)
 
 	nestmon.StartNestmonLoop(queryInterval, &config)
 }

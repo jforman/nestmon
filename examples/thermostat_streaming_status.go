@@ -3,8 +3,8 @@ package main
 // https://developers.nest.com/documentation/cloud/how-to-read-data
 import (
 	"flag"
-	"fmt"
 	"github.com/jforman/nestmon"
+	"log"
 )
 
 func main() {
@@ -27,11 +27,11 @@ func main() {
 func printHomeStatus(h nestmon.NestAPIStreamingResponse) {
 	if h.Data.Devices != nil {
 		for key, value := range h.Data.Devices.Thermostats {
-			fmt.Printf("Streaming Thermostats key: %+v, value: %+v.\n", key, value)
+			log.Printf("Streaming Thermostats key: %+v, value: %+v.\n", key, value)
 		}
 	}
 	for key, value := range h.Data.Structures {
-		fmt.Printf("Structures, key: %+v, value: %+v.\n", key, value)
+		log.Printf("Structures, key: %+v, value: %+v.\n", key, value)
 	}
 
 }
