@@ -30,9 +30,15 @@ type Thermostat struct {
 	Humidity            int    `json:"humidity"`
 	HvacState           string `json:"hvac_state"`
 	Name                string `json:"name"`
+	NameLong            string `json:"name_long"`
 	SoftwareVersion     string `json:"software_version"`
+	StructureID         string `json:"structure_id"`
 }
 
 type NestmonConfig struct {
 	AccessToken string `json:"AccessToken"`
+	DbHostUrl   string `json:"DbHostUrl"`
+	DbName      string `json:"DbName"`
+	DbUsername  string `json:DbUsername"`
+	DbPassword  string `json:DbPassword"`
 }

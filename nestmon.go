@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/influxdata/influxdb/client/v2"
 )
 
 var (
@@ -86,5 +88,61 @@ func processNestResponse(nr NestAPIResponse, c *NestmonConfig) {
 	}
 	for key, value := range nr.Structures {
 		log.Printf("Structures, key: %+v, value: %+v.\n", key, value)
+	}
+	insertNestAPIResponseIntoInfluxDB(nr, c)
+}
+
+func insertNestAPIResponseIntoInfluxDB(nr NestAPIResponse, nc *NestmonConfig) {
+	c, err := client.NewHTTPClient(client.HTTPConfig{
+		Addr:     nc.DbHostUrl,
+		Username: nc.DbUsername,
+		Password: nc.DbPassword,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.Close()
+
+	// Create a new batch points
+	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+		Database:  nc.DbName,
+		Precision: "s",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Loop over thermostats and add their current state to the batch
+	for key, value := range nr.Devices.Thermostats {
+		structureName := nr.Structures[value.StructureID].Name
+		tags := map[string]string{
+			"name":      value.Name,
+			"key":       key,
+			"structure": structureName,
+		}
+		fields := map[string]interface{}{
+			"AmbientTemperatureF": value.AmbientTemperatureF,
+			"Humidity":            value.Humidity,
+			"HvacState":           value.HvacState,
+			"SoftwareVersion":     value.SoftwareVersion,
+		}
+		log.Printf("tags: %+v; fields: %+v.\n", tags, fields)
+		pt, err := client.NewPoint("thermostat", tags, fields, time.Now())
+		if err != nil {
+			log.Printf("Error when adding NewPoint: %+v.\n", err)
+		} else {
+			bp.AddPoint(pt)
+		}
+
+		// Write the batch to Influx database
+		if err := c.Write(bp); err != nil {
+			log.Printf("Error writing batch: %+v.\n", err)
+		}
+
+		// Close client resources
+		if err := c.Close(); err != nil {
+			log.Printf("Error closing client resources: %+v.\n", err)
+		}
 	}
 }

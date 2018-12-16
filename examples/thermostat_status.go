@@ -3,9 +3,10 @@ package main
 // https://developers.nest.com/documentation/cloud/how-to-read-data
 import (
 	"flag"
-	"github.com/jforman/nestmon"
 	"log"
 	"time"
+
+	"github.com/jforman/nestmon"
 )
 
 func main() {
