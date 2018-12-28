@@ -36,9 +36,29 @@ type Thermostat struct {
 }
 
 type NestmonConfig struct {
-	AccessToken string `json:"AccessToken"`
-	DbHostUrl   string `json:"DbHostUrl"`
-	DbName      string `json:"DbName"`
-	DbUsername  string `json:DbUsername"`
-	DbPassword  string `json:DbPassword"`
+	AccessToken       string `json:"AccessToken"`
+	DbHostUrl         string `json:"DbHostUrl"`
+	NestDbName        string `json:"NestDbName"`
+	NestDbUsername    string `json:"NestDbUsername"`
+	NestDbPassword    string `json:"NestDbPassword"`
+	WeatherDbName     string `json:"WeatherDbName"`
+	WeatherDbUsername string `json:"WeatherDbUsername"`
+	WeatherDbPassword string `json:"WeatherDbPassword"`
+	OWMZip            string `json:"OWMZip"`
+	OWMAppId          string `json:"OWMAppId"`
+}
+
+// Weather data from openweathermap.org
+type OWMResponse struct {
+	Main *OMWResponseMain `json:"main"`
+	Wind *OMWResponseWind `json:"wind"`
+}
+
+type OMWResponseMain struct {
+	Temp     float32 `json:"temp"`
+	Humidity float32 `json:"humidity"`
+}
+
+type OMWResponseWind struct {
+	Speed float32 `json:"speed"`
 }

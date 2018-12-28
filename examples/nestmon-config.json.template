@@ -1,3 +1,12 @@
 {
-	"accessToken": "XXXXXXX"
+    "AccessToken": "",
+    "DbHostUrl": "http://influxdbhost:8086/",
+    "NestDbName": "nest",
+    "NestDbUsername": "nestuser",
+    "NestDbPassword": "nestpass",
+    "WeatherDbName": "weather",
+    "WeatherDbUsername": "weatheruser",
+    "WeatherDbPassword": "weatherpass",
+    "OWMZip": "90210,us",
+    "OWMAppId": "1234534e0f19e8f3027dc3482c9dabcde"
 }

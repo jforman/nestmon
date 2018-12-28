@@ -18,7 +18,7 @@ func main() {
 	flag.Parse()
 	nestmon.ParseConfig(*flagConfigPath, &config)
 	log.Println("Starting thermostat status nestmon. Type: Polling.")
-	log.Printf("In main, after parse, config: %+v.\n", config)
+	log.Printf("Config: %+v.\n", config)
 
-	nestmon.StartNestmonLoop(queryInterval, &config)
+	nestmon.StartNestmonLoop(*queryInterval, &config)
 }
