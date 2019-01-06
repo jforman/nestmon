@@ -98,12 +98,16 @@ func getNestResponse(c *NestmonConfig) NestAPIResponse {
 		},
 	}
 
-	//log.Printf("Request: %+v.\n", r)
+	// TODO: Eventually make this part of debug logging.
+	log.Printf("Request: %+v.\n", r)
 	resp, _ := customClient.Do(r)
+	log.Printf("Response: %+v; Response Body: %+v.\n", resp, resp.Body)
 	defer resp.Body.Close()
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	var prettyJson bytes.Buffer
 	json.Indent(&prettyJson, bodyBytes, "=", "\t")
+
+	// TODO: Eventually make this part of debug logging.
 	// log.Printf("Response: %v.\n", resp)
 	// log.Printf("Pretty JSON: %v.\n", prettyJson.String())
 

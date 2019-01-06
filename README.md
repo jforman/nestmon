@@ -32,3 +32,18 @@ curl -X POST \
   -d "code=$AUTH_CODE&client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&grant_type=authorization_code" \
   "https://api.home.nest.com/oauth2/access_token"
 ```
+
+## Building and uploading to Docker hub
+
+```
+VER=foo
+docker build -t jforman/nestmon:$VER .
+docker push jforman/nestmon:$VER
+```
+
+## Running a local container image of Nestmon
+
+```
+VER=foo
+docker run -i -t --rm jforman/nestmon:$VER /bin/sh
+```
